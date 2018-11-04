@@ -1,4 +1,4 @@
-package br.com.boa50.androidbluetoothclient;
+package br.com.boa50.kbingobluetoothclient;
 
 import android.content.Context;
 import android.os.Handler;
@@ -23,14 +23,8 @@ public class ServiceHandler extends Handler {
                 Toast.makeText(mContext.get(), "Read: " + readMsg,
                         Toast.LENGTH_LONG).show();
                 break;
-            case Constants.MESSAGE_WRITE:
-                byte[] writeBuf = (byte[]) msg.obj;
-                String writeMsg = new String(writeBuf);
-                Toast.makeText(mContext.get(), "Write: " + writeMsg,
-                        Toast.LENGTH_LONG).show();
-                break;
             case Constants.MESSAGE_TOAST:
-                Toast.makeText(mContext.get(), msg.getData().getString(Constants.TOAST),
+                Toast.makeText(mContext.get(), msg.getData().getString(Constants.EXTRA_TOAST),
                         Toast.LENGTH_LONG).show();
                 break;
         }

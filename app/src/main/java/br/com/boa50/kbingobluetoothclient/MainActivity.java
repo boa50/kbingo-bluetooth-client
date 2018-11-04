@@ -1,4 +1,4 @@
-package br.com.boa50.androidbluetoothclient;
+package br.com.boa50.kbingobluetoothclient;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -10,7 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
 
+    private EditText etCartelaNumero;
     private Button btSend;
     private Button btConnect;
 
@@ -29,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
 
+        etCartelaNumero = findViewById(R.id.et_cartela_numero);
         btSend = findViewById(R.id.bt_send);
         btConnect = findViewById(R.id.bt_connect);
 
@@ -72,8 +76,18 @@ public class MainActivity extends AppCompatActivity {
         btSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message = "teste 50";
-                sendMessage(message);
+                if (!"".equals(etCartelaNumero.getText().toString())){
+                    sendMessage(etCartelaNumero.getText().toString());
+                    etCartelaNumero.setText("");
+
+                    InputMethodManager inputMethodManager =
+                            (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
+                    assert inputMethodManager != null;
+                    assert getCurrentFocus() != null;
+                    inputMethodManager.hideSoftInputFromWindow(
+                            getCurrentFocus().getWindowToken(), 0);
+                }
             }
         });
 
@@ -124,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     setupService();
                 } else {
-                    Log.d(TAG, "BT not enabled");
+                    Log.d(TAG, "Bluetooth not enabled");
                     Toast.makeText(getApplicationContext(), "Bluetooth não ativado",
                             Toast.LENGTH_SHORT).show();
                     this.finish();
