@@ -17,6 +17,12 @@ public class ServiceHandler extends Handler {
     @Override
     public void handleMessage(Message msg) {
         switch (msg.what) {
+            case Constants.MESSAGE_READ:
+                byte[] readBuf = (byte[]) msg.obj;
+                String readMsg = new String(readBuf, 0, msg.arg1);
+                Toast.makeText(mContext.get(), "Read: " + readMsg,
+                        Toast.LENGTH_LONG).show();
+                break;
             case Constants.MESSAGE_WRITE:
                 byte[] writeBuf = (byte[]) msg.obj;
                 String writeMsg = new String(writeBuf);

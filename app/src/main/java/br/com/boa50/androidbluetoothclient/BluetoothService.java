@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
@@ -148,18 +149,41 @@ public class BluetoothService {
 
     private class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
+        private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
         ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
+            InputStream tmpIn = null;
             OutputStream tmpOut = null;
+
             try {
+                tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.e(TAG, "temp sockets not created", e);
+                Log.e(TAG, "Temp sockets streams not created", e);
             }
+            mmInStream = tmpIn;
             mmOutStream = tmpOut;
             mState = STATE_CONNECTED;
+        }
+
+        public void run() {
+            Log.i(TAG, "Running mConnectedThread");
+            byte[] buffer = new byte[1024];
+            int bytes;
+
+            while (mState == STATE_CONNECTED) {
+                try {
+                    bytes = mmInStream.read(buffer);
+                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
+                            .sendToTarget();
+                } catch (IOException e) {
+                    Log.e(TAG, "mConnectedThread disconnected", e);
+                    connectionLost();
+                    break;
+                }
+            }
         }
 
         void write(byte[] buffer) {
